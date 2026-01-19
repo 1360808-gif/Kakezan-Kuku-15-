@@ -1,1 +1,0 @@
-# Kakezan-Kuku-15-
