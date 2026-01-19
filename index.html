@@ -23,12 +23,10 @@ body{
 }
 .wrap{ max-width:1200px; margin:16px auto; padding:0 12px 40px; }
 
-/* 左：タイトル+問題 / 右：手書き */
 .layout{
   display:grid;
   grid-template-columns: minmax(560px, 760px) 1fr;
   gap:12px;
-  align-items:start;
 }
 @media(max-width:980px){
   .layout{ grid-template-columns:1fr; }
@@ -42,21 +40,17 @@ body{
   box-shadow:var(--shadow);
 }
 
-/* ===== タイトル行（ここにベスト） ===== */
 .titleRow{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
-  flex-wrap:nowrap;
 }
 .titleRow h1{
   margin:0;
   font-size:22px;
-  white-space:nowrap;
 }
 
-/* ベストタイム表示（常に表示） */
+/* ===== ベスト ===== */
 .bestBox{
   display:inline-flex;
   align-items:baseline;
@@ -66,40 +60,21 @@ body{
   border:1px dashed rgba(79,70,229,.55);
   background:#fbfbff;
   font-weight:1000;
-  white-space:nowrap;
 }
-.bestBox .label{ font-size:13px; opacity:.85; }
-.bestBox .value{ font-size:20px; letter-spacing:.4px; }
-
-/* ★ベスト消去ボタン */
 .bestClearBtn{
   padding:6px 8px;
   border-radius:10px;
   border:1px solid var(--line);
   background:#fff;
-  font-weight:900;
   cursor:pointer;
-  line-height:1;
 }
-.bestClearBtn:hover{ background:#fee2e2; }
-.bestClearBtn:active{ transform: translateY(1px); }
 
-/* ===== 上部：1行（ボタン類） ===== */
+/* ===== コントロール ===== */
 .controlsRow{
   margin-top:10px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
   gap:10px;
-  flex-wrap:nowrap;         /* 1行固定 */
-  overflow-x:auto;          /* 狭い時は横スクロール */
-  -webkit-overflow-scrolling:touch;
-}
-.controlsLeft, .controlsRight{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:nowrap;
 }
 
 button{
@@ -112,10 +87,9 @@ button{
 }
 button.primary{
   background:var(--accent);
-  border-color:transparent;
   color:#fff;
+  border-color:transparent;
 }
-button:active{ transform: translateY(1px); }
 
 .panel{
   background:#fff;
@@ -125,59 +99,11 @@ button:active{ transform: translateY(1px); }
   box-shadow:0 6px 12px rgba(0,0,0,.06);
 }
 
-/* ===== タイム表示（上部1行内） ===== */
-.timerInline{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex:0 0 auto;
-  white-space:nowrap;
-}
-.timer{
-  display:inline-flex;
-  align-items:baseline;
-  gap:8px;
-  padding:8px 12px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:#f8fafc;
-  font-weight:1000;
-}
-.timer .label{ font-size:13px; opacity:.85; }
-.timer .value{ font-size:20px; letter-spacing:.5px; }
-.timer.running{
-  border-color: rgba(79,70,229,.45);
-  box-shadow: 0 0 0 3px rgba(79,70,229,.12);
-}
-.hint{
-  color:#6b7280;
-  font-weight:800;
-  font-size:13px;
-}
-.timerOff{ display:none; }
-
-/* 計測ON/OFFスイッチ */
-.switch{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:7px 10px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#fff;
-  font-weight:900;
-  cursor:pointer;
-  user-select:none;
-  -webkit-user-select:none;
-  white-space:nowrap;
-}
-.switch input{ accent-color: var(--accent); }
-
 /* ===== 問題 ===== */
 .grid{
   margin-top:12px;
   display:grid;
-  grid-template-columns:repeat(3,1fr); /* ★3列 */
+  grid-template-columns:repeat(3,1fr);
   gap:12px;
 }
 @media(max-width:900px){
@@ -188,27 +114,14 @@ button:active{ transform: translateY(1px); }
 }
 
 .q{
-  background:#fff;
   border:1px solid var(--line);
   border-radius:18px;
   padding:12px;
-  box-shadow:0 6px 12px rgba(0,0,0,.06);
-  overflow:visible;
 }
 .qRow{
   display:flex;
   align-items:center;
   gap:10px;
-  overflow:visible;
-}
-.qInline{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex:1;
-  min-width:0;
-  white-space:nowrap;
-  overflow:visible;
 }
 .expr{
   font-size:18px;
@@ -217,54 +130,32 @@ button:active{ transform: translateY(1px); }
 
 .answerBox{
   position:relative;
-  display:inline-block;
-  flex:none;
-  overflow:visible;
 }
 .answerBox input{
   width:64px;
-  padding:6px 6px;
+  padding:6px;
   font-size:17px;
   text-align:center;
   border-radius:10px;
   border:2px solid var(--line);
+}
+.answerBox.ok input{ border-color:#16a34a; }
+
+.smallBtn{
+  width:60px;
+  height:38px;
+  border-radius:12px;
+  border:1px solid var(--line);
   background:#fff;
-  position:relative;
-  z-index:1;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
 }
-
-.hankakuWarn{
-  position:absolute;
-  top:-26px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#fee2e2;
-  color:#b91c1c;
+.smallBtn span{
   font-size:12px;
-  font-weight:900;
-  padding:4px 8px;
-  border-radius:8px;
-  white-space:nowrap;
-  box-shadow:0 4px 8px rgba(0,0,0,.12);
-  display:none;
-  z-index:20;
+  font-weight:1000;
+  line-height:1.05;
 }
-.answerBox.warn .hankakuWarn{ display:block; }
-
-.mark{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:46px;
-  height:46px;
-  border:4px solid rgba(239,68,68,0.7);
-  border-radius:50%;
-  transform:translate(-50%, -50%);
-  pointer-events:none;
-  display:none;
-  z-index:9999;
-}
-.answerBox.ok .mark{ display:block; }
 
 .score{
   margin-top:14px;
@@ -275,48 +166,24 @@ button:active{ transform: translateY(1px); }
 /* ===== 手書き ===== */
 .boardHeader{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
   margin-bottom:10px;
 }
-.boardTitle{ font-weight:1000; font-size:16px; }
-.boardTools{ display:flex; gap:8px; flex-wrap:wrap; }
+.boardTools{ display:flex; gap:8px; }
 .toolBtn{
   padding:8px 10px;
   border-radius:12px;
   border:1px solid var(--line);
   background:#fff;
   font-weight:900;
-  cursor:pointer;
-}
-.toolBtn.active{
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(79,70,229,.15);
 }
 .canvasWrap{
   border:2px dashed #cbd5e1;
   border-radius:16px;
-  background:#fff;
-  overflow:hidden;
-  position:relative;
 }
 #board{
   width:100%;
   height:640px;
-  display:block;
-  touch-action:none;
-  background:
-    linear-gradient(#f9fafb 1px, transparent 1px),
-    linear-gradient(90deg, #f9fafb 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-.boardHint{
-  margin-top:10px;
-  color:#6b7280;
-  font-weight:800;
-  font-size:13px;
 }
 </style>
 </head>
@@ -327,39 +194,19 @@ button:active{ transform: translateY(1px); }
 
     <div class="leftCol">
       <div class="top">
-
         <div class="titleRow">
           <h1>かけ算</h1>
-
-          <div class="bestBox" id="bestInline" aria-live="polite" title="ベストタイム（この端末に保存）">
-            <button id="clearBestBtn" class="bestClearBtn" type="button" title="ベストをけす">🗑</button>
-            <span class="label">🏆 ベスト</span>
-            <span class="value" id="bestText">—</span>
-            <span class="label">びょう</span>
+          <div class="bestBox">
+            <button id="clearBestBtn" class="bestClearBtn">🗑</button>
+            <span>🏆</span>
+            <span id="bestText">—</span>
+            <span>秒</span>
           </div>
         </div>
 
         <div class="controlsRow">
-          <div class="controlsLeft">
-            <button class="primary" id="checkBtn">こたえあわせ</button>
-          </div>
-
-          <div class="timerInline" id="timerInline">
-            <div class="timer" id="timerBox" aria-live="polite">
-              <span class="label">⏱ タイム</span>
-              <span class="value" id="timerText">0.0</span>
-              <span class="label">びょう</span>
-            </div>
-            <div class="hint" id="timerHint">「もんだいをつくる」でスタート</div>
-          </div>
-
-          <div class="controlsRight">
-            <label class="switch" title="タイムを計測する/しない">
-              <input type="checkbox" id="timingToggle" checked>
-              タイム
-            </label>
-            <button id="makeBtn">もんだいをつくる</button>
-          </div>
+          <button class="primary" id="checkBtn">こたえあわせ</button>
+          <button id="makeBtn">もんだいをつくる</button>
         </div>
       </div>
 
@@ -371,316 +218,135 @@ button:active{ transform: translateY(1px); }
 
     <div class="panel">
       <div class="boardHeader">
-        <div class="boardTitle">✍ 手書き計算スペース</div>
+        <div>✍ 手書き</div>
         <div class="boardTools">
-          <button class="toolBtn active" id="penBtn">ペン</button>
+          <button class="toolBtn" id="penBtn">ペン</button>
           <button class="toolBtn" id="eraserBtn">消しゴム</button>
           <button class="toolBtn" id="clearBtn">ぜんぶけす</button>
         </div>
       </div>
-
       <div class="canvasWrap">
         <canvas id="board"></canvas>
       </div>
-
-      <div class="boardHint">※ 指で書けます。</div>
     </div>
 
   </div>
 </div>
 
 <script>
-function toHalfWidth(str){
-  return str.replace(/[０-９]/g, s =>
-    String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
-  );
-}
 function rand(min,max){
   return Math.floor(Math.random()*(max-min+1))+min;
 }
 
-let problems=[];
 const QNUM=15;
+let problems=[];
+const LONG_PRESS=350;
 
-/* ===== タイム計測 ON/OFF ===== */
-let timingEnabled = true;
-const timingToggle = document.getElementById("timingToggle");
-const timerInline = document.getElementById("timerInline");
-
-/* ===== ベストタイム（localStorage） ===== */
-const BEST_KEY = "kakezan_best_sec_v1";
-const bestText = document.getElementById("bestText");
-
-function loadBest(){
-  const v = localStorage.getItem(BEST_KEY);
-  if(!v) return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
+/* ===== ベスト ===== */
+const BEST_KEY="kakezan_best_v1";
+const bestText=document.getElementById("bestText");
 function showBest(){
-  const best = loadBest();
-  bestText.textContent = (best==null) ? "—" : best.toFixed(1);
+  const v=localStorage.getItem(BEST_KEY);
+  bestText.textContent=v?Number(v).toFixed(1):"—";
 }
-function tryUpdateBest(sec){
-  const best = loadBest();
-  if(best==null || sec < best){
-    localStorage.setItem(BEST_KEY, String(sec));
-    showBest();
-  }
-}
-function clearBest(){
-  if(confirm("ベストタイムをけしますか？")){
-    try{ localStorage.removeItem(BEST_KEY); }catch(e){}
-    showBest();
-  }
-}
-document.getElementById("clearBestBtn").addEventListener("click", clearBest);
+document.getElementById("clearBestBtn").onclick=()=>{
+  localStorage.removeItem(BEST_KEY);
+  showBest();
+};
 
-/* ===== 全問タイマー（自動） ===== */
-let tStart = null;
-let tStop = null;
-let tTick = null;
-
-const timerBox = document.getElementById("timerBox");
-const timerText = document.getElementById("timerText");
-const timerHint = document.getElementById("timerHint");
-
-function timerReset(){
-  tStart = null;
-  tStop = null;
-  timerText.textContent = "0.0";
-  timerBox.classList.remove("running");
-  timerHint.textContent = "「もんだいをつくる」でスタート";
-  if(tTick){ clearInterval(tTick); tTick = null; }
-}
-function timerStart(){
-  if(!timingEnabled) return;
-  tStart = performance.now();
-  tStop = null;
-  timerBox.classList.add("running");
-  timerHint.textContent = "ぜんぶ せいかい でストップ！";
-  if(tTick) clearInterval(tTick);
-  tTick = setInterval(()=>{
-    if(tStart==null || tStop!=null) return;
-    timerText.textContent = ((performance.now() - tStart) / 1000).toFixed(1);
-  }, 100);
-}
-function timerStop(){
-  if(!timingEnabled) return;
-  if(tStart==null || tStop!=null) return;
-
-  tStop = performance.now();
-  const sec = (tStop - tStart) / 1000;
-
-  timerText.textContent = sec.toFixed(1);
-  timerBox.classList.remove("running");
-  timerHint.textContent = "🎉 おわり！もういちど は「もんだいをつくる」";
-  if(tTick){ clearInterval(tTick); tTick = null; }
-
-  tryUpdateBest(sec);
-}
-
-function setTimingUI(){
-  timingEnabled = timingToggle.checked;
-  timerReset();
-  if(timingEnabled){
-    timerInline.classList.remove("timerOff");
-  }else{
-    timerInline.classList.add("timerOff");
-  }
-}
-timingToggle.addEventListener("change", setTimingUI);
-
-/* ===== かけ算：問題生成 ===== */
+/* ===== 問題生成 ===== */
 function makeProblems(){
   const out=[];
   while(out.length<QNUM){
-    const a = rand(2,9);
-    const b = rand(2,9);
+    const a=rand(2,9), b=rand(2,9);
     out.push({a,b,ans:a*b});
   }
   return out;
 }
 
-/* ===== 描画 ===== */
+/* ===== 表示 ===== */
 function render(){
   const qs=document.getElementById("qs");
   qs.innerHTML="";
-
-  problems.forEach((p, idx)=>{
+  problems.forEach(p=>{
     const d=document.createElement("div");
     d.className="q";
     d.innerHTML=`
       <div class="qRow">
-        <div class="qInline">
-          <span class="expr">${p.a} × ${p.b} ＝</span>
-
-          <span class="answerBox aBox">
-            <span class="hankakuWarn">半角数字で入力してね</span>
-            <input class="ansA" inputmode="numeric" aria-label="答え ${idx+1}">
-            <span class="mark" aria-hidden="true"></span>
-          </span>
-        </div>
-      </div>
-    `;
+        <span class="expr">${p.a} × ${p.b} =</span>
+        <span class="answerBox">
+          <input class="ans" inputmode="numeric">
+        </span>
+        <button class="smallBtn holdBtn">
+          <span>こたえを</span><span>みる</span>
+        </button>
+      </div>`;
     qs.appendChild(d);
 
-    const aInput = d.querySelector(".ansA");
+    const input=d.querySelector(".ans");
+    const btn=d.querySelector(".holdBtn");
+    let saved="";
+    let timer=null;
 
-    aInput.addEventListener("input",(e)=>{
-      const box = e.target.parentElement;
-      const before = e.target.value;
-      const after = toHalfWidth(before);
-
-      if(before !== after){
-        box.classList.add("warn");
-        clearTimeout(box._warnTimer);
-        box._warnTimer = setTimeout(()=> box.classList.remove("warn"), 1500);
+    btn.addEventListener("mousedown",()=>{
+      timer=setTimeout(()=>{
+        saved=input.value;
+        input.value=p.ans;
+        input.readOnly=true;
+      },LONG_PRESS);
+    });
+    btn.addEventListener("mouseup",()=>{
+      clearTimeout(timer);
+      if(input.readOnly){
+        input.value=saved;
+        input.readOnly=false;
       }
-      e.target.value = after;
+    });
+    btn.addEventListener("mouseleave",()=>btn.dispatchEvent(new Event("mouseup")));
 
-      maybeStopTimerIfAllCorrect();
+    btn.addEventListener("touchstart",(e)=>{
+      e.preventDefault();
+      timer=setTimeout(()=>{
+        saved=input.value;
+        input.value=p.ans;
+        input.readOnly=true;
+      },LONG_PRESS);
+    },{passive:false});
+    btn.addEventListener("touchend",()=>{
+      clearTimeout(timer);
+      if(input.readOnly){
+        input.value=saved;
+        input.readOnly=false;
+      }
     });
   });
-
   document.getElementById("score").textContent="点数：— / 100";
 }
 
-/* ===== 全問正解でストップ ===== */
-function maybeStopTimerIfAllCorrect(){
-  if(!timingEnabled) return;
-  if(tStart==null || tStop!=null) return;
-
-  const cards = Array.from(document.querySelectorAll(".q"));
-  if(cards.length===0) return;
-
-  for(let i=0;i<cards.length;i++){
-    const ua = Number(cards[i].querySelector(".ansA").value);
-    if(ua !== problems[i].ans) return;
-  }
-  timerStop();
-}
-
-/* ===== こたえあわせ ===== */
+/* ===== 判定 ===== */
 function check(){
-  let correctCount = 0;
-
-  document.querySelectorAll(".q").forEach((card,i)=>{
-    const aBox = card.querySelector(".ansA").parentElement;
-    aBox.classList.remove("ok");
-
-    const ua = Number(card.querySelector(".ansA").value);
-    if(ua === problems[i].ans){
-      aBox.classList.add("ok");
-      correctCount++;
+  let ok=0;
+  document.querySelectorAll(".q").forEach((q,i)=>{
+    const box=q.querySelector(".answerBox");
+    box.classList.remove("ok");
+    if(Number(q.querySelector(".ans").value)===problems[i].ans){
+      box.classList.add("ok");
+      ok++;
     }
   });
-
-  const score = Math.round((correctCount / QNUM) * 100);
-  document.getElementById("score").textContent = `点数：${score} / 100`;
-
-  maybeStopTimerIfAllCorrect();
+  document.getElementById("score").textContent=`点数：${Math.round(ok/QNUM*100)} / 100`;
 }
 
-/* ===== 手書き ===== */
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
-let drawing=false, lastX=0, lastY=0, mode="pen";
-
-function resizeCanvas(){
-  const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-
-  const old = document.createElement("canvas");
-  old.width = canvas.width;
-  old.height = canvas.height;
-  old.getContext("2d").drawImage(canvas,0,0);
-
-  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  ctx.drawImage(old, 0, 0, old.width, old.height, 0, 0, rect.width, rect.height);
-  setPenStyle();
-}
-function setPenStyle(){
-  ctx.lineCap="round"; ctx.lineJoin="round";
-  if(mode==="pen"){
-    ctx.globalCompositeOperation="source-over";
-    ctx.lineWidth=4;
-    ctx.strokeStyle="#111827";
-  }else{
-    ctx.globalCompositeOperation="destination-out";
-    ctx.lineWidth=16;
-    ctx.strokeStyle="rgba(0,0,0,1)";
-  }
-}
-function getPos(e){
-  const r=canvas.getBoundingClientRect();
-  const t=e.touches?e.touches[0]:null;
-  const cx=t?t.clientX:e.clientX;
-  const cy=t?t.clientY:e.clientY;
-  return {x:cx-r.left,y:cy-r.top};
-}
-function startDraw(e){
-  drawing=true;
-  const p=getPos(e); lastX=p.x; lastY=p.y;
-}
-function moveDraw(e){
-  if(!drawing) return;
-  e.preventDefault();
-  const p=getPos(e);
-  ctx.beginPath();
-  ctx.moveTo(lastX,lastY);
-  ctx.lineTo(p.x,p.y);
-  ctx.stroke();
-  lastX=p.x; lastY=p.y;
-}
-function endDraw(){ drawing=false; }
-
-canvas.addEventListener("mousedown", startDraw);
-canvas.addEventListener("mousemove", moveDraw);
-window.addEventListener("mouseup", endDraw);
-
-canvas.addEventListener("touchstart", startDraw, {passive:false});
-canvas.addEventListener("touchmove", moveDraw, {passive:false});
-canvas.addEventListener("touchend", endDraw);
-canvas.addEventListener("touchcancel", endDraw);
-
-const penBtn=document.getElementById("penBtn");
-const eraserBtn=document.getElementById("eraserBtn");
-const clearBtn=document.getElementById("clearBtn");
-
-function setActive(btn){
-  [penBtn, eraserBtn].forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-}
-penBtn.addEventListener("click", ()=>{ mode="pen"; setActive(penBtn); setPenStyle(); });
-eraserBtn.addEventListener("click", ()=>{ mode="eraser"; setActive(eraserBtn); setPenStyle(); });
-clearBtn.addEventListener("click", ()=>{
-  const rect = canvas.getBoundingClientRect();
-  ctx.clearRect(0,0,rect.width,rect.height);
-});
-
-/* ===== 初期化 ===== */
+/* 初期化 */
 document.getElementById("makeBtn").onclick=()=>{
   problems=makeProblems();
   render();
-  timerReset();
-  timerStart(); // 問題作成で自動スタート（ONのときだけ）
 };
 document.getElementById("checkBtn").onclick=check;
 
-/* 初期表示：問題は表示する（タイマーは押すまで動かさない） */
-problems = makeProblems();
+problems=makeProblems();
 render();
-
-showBest();     // ベストは常に表示
-setTimingUI();  // タイム表示だけON/OFF
-
-setPenStyle();
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+showBest();
 </script>
 </body>
 </html>
