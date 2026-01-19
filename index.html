@@ -141,6 +141,7 @@ button.primary{
 }
 .answerBox.ok input{ border-color:#16a34a; }
 
+/* ===== こたえをみるボタン ===== */
 .smallBtn{
   width:60px;
   height:38px;
@@ -150,11 +151,13 @@ button.primary{
   display:grid;
   place-items:center;
   cursor:pointer;
+  padding:0;
 }
 .smallBtn span{
-  font-size:12px;
+  display:block;
+  font-size:10px;     /* ★ 小さく */
   font-weight:1000;
-  line-height:1.05;
+  line-height:1.05;   /* ★ 行間を詰める */
 }
 
 .score{
@@ -278,7 +281,8 @@ function render(){
           <input class="ans" inputmode="numeric">
         </span>
         <button class="smallBtn holdBtn">
-          <span>こたえを</span><span>みる</span>
+          <span>こたえを</span>
+          <span>みる</span>
         </button>
       </div>`;
     qs.appendChild(d);
