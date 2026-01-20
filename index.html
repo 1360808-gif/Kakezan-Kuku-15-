@@ -79,7 +79,7 @@ body{
 .bestClearBtn:hover{ background:#fee2e2; }
 .bestClearBtn:active{ transform: translateY(1px); }
 
-/* ===== 上の操作行 ===== */
+/* ===== 上の操作行（1行） ===== */
 .controlsRow{
   margin-top:10px;
   display:flex;
@@ -88,6 +88,13 @@ body{
   gap:10px;
   flex-wrap:nowrap;
   overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.controlsLeft, .controlsRight{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:nowrap;
 }
 
 button{
@@ -103,6 +110,7 @@ button.primary{
   border-color:transparent;
   color:#fff;
 }
+button:active{ transform: translateY(1px); }
 
 .panel{
   background:#fff;
@@ -110,6 +118,66 @@ button.primary{
   border-radius:18px;
   padding:14px;
   box-shadow:0 6px 12px rgba(0,0,0,.06);
+}
+
+/* ===== タイム表示 ===== */
+.timerInline{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+.timer{
+  display:inline-flex;
+  align-items:baseline;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:#f8fafc;
+  font-weight:1000;
+}
+.timer .label{ font-size:13px; opacity:.85; }
+.timer .value{ font-size:20px; letter-spacing:.5px; }
+.timer.running{
+  border-color: rgba(79,70,229,.45);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+}
+.hint{
+  color:#6b7280;
+  font-weight:800;
+  font-size:13px;
+}
+.timerOff{ display:none; }
+
+/* 計測ON/OFF */
+.switch{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:900;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  white-space:nowrap;
+}
+.switch input{ accent-color: var(--accent); }
+
+/* ===== エラー表示（何も出ないとき用） ===== */
+.errBar{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid #fecaca;
+  background:#fff1f2;
+  color:#991b1b;
+  font-weight:900;
+  display:none;
 }
 
 /* ===== 問題 ===== */
@@ -131,6 +199,7 @@ button.primary{
   border:1px solid var(--line);
   border-radius:18px;
   padding:12px;
+  box-shadow:0 6px 12px rgba(0,0,0,.06);
 }
 .qRow{
   display:flex;
@@ -157,35 +226,55 @@ button.primary{
   background:#fff;
 }
 
-/* ===== 〇 / ◎ ===== */
+/* 半角注意 */
+.hankakuWarn{
+  position:absolute;
+  top:-26px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#fee2e2;
+  color:#b91c1c;
+  font-size:12px;
+  font-weight:900;
+  padding:4px 8px;
+  border-radius:8px;
+  white-space:nowrap;
+  box-shadow:0 4px 8px rgba(0,0,0,.12);
+  display:none;
+  z-index:20;
+}
+.answerBox.warn .hankakuWarn{ display:block; }
+
+/* 〇/◎ マーク（◎が太く見えない調整版） */
 .mark{
   position:absolute;
   top:50%;
   left:50%;
   width:46px;
   height:46px;
-  border:4px solid rgba(239,68,68,0.72);
+  border:3px solid rgba(239,68,68,0.72);
   border-radius:50%;
   transform:translate(-50%,-50%);
   pointer-events:none;
   display:none;
   z-index:9999;
 }
-
-/* 〇 */
 .answerBox.okSingle .mark{ display:block; }
-
-/* ◎（二重丸：調整済み） */
 .answerBox.okDouble .mark{ display:block; }
 .answerBox.okDouble .mark::after{
   content:"";
   position:absolute;
-  inset:-10px;                 /* 外側を広げる */
-  border:3px solid rgba(239,68,68,0.55); /* 細く・薄く */
+  top:-11px;
+  left:-11px;
+  right:-11px;
+  bottom:-11px;
+  border:2px solid rgba(239,68,68,0.72);
   border-radius:50%;
 }
 
-/* ===== こたえをみる ===== */
+.answerBox.revealing input{ background:#f8fafc; }
+
+/* こたえをみるボタン */
 .smallBtn{
   width:60px;
   height:38px;
@@ -196,6 +285,7 @@ button.primary{
   place-items:center;
   cursor:pointer;
   padding:0;
+  flex:none;
 }
 .smallBtn span{
   display:block;
@@ -209,11 +299,446 @@ button.primary{
   font-weight:1000;
   font-size:18px;
 }
+
+/* 手書き */
+.boardHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.boardTools{ display:flex; gap:8px; flex-wrap:wrap; }
+.toolBtn{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.toolBtn.active{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+}
+.canvasWrap{
+  border:2px dashed #cbd5e1;
+  border-radius:16px;
+  background:#fff;
+  overflow:hidden;
+}
+#board{
+  width:100%;
+  height:640px;
+  display:block;
+  touch-action:none;
+  background:
+    linear-gradient(#f9fafb 1px, transparent 1px),
+    linear-gradient(90deg, #f9fafb 1px, transparent 1px);
+  background-size: 24px 24px;
+}
 </style>
 </head>
 
 <body>
-<!-- ※ 以降のHTML / JSは前回と同一（ロジック変更なし） -->
-<!-- 長いため省略せず、前回提示したものをそのまま使用してください -->
+<div class="wrap">
+  <div class="layout">
+
+    <div class="leftCol">
+      <div class="top">
+
+        <div class="titleRow">
+          <h1>かけ算</h1>
+
+          <div class="bestBox" aria-live="polite" title="ベストタイム（この端末に保存）">
+            <button id="clearBestBtn" class="bestClearBtn" type="button" title="ベストをけす">🗑</button>
+            <span class="label">🏆 ベスト</span>
+            <span class="value" id="bestText">—</span>
+            <span class="label">びょう</span>
+          </div>
+        </div>
+
+        <div class="controlsRow">
+          <div class="controlsLeft">
+            <button class="primary" id="checkBtn">こたえあわせ</button>
+          </div>
+
+          <div class="timerInline" id="timerInline">
+            <div class="timer" id="timerBox" aria-live="polite">
+              <span class="label">⏱ タイム</span>
+              <span class="value" id="timerText">0.0</span>
+              <span class="label">びょう</span>
+            </div>
+            <div class="hint" id="timerHint">「もんだいをつくる」でスタート</div>
+          </div>
+
+          <div class="controlsRight">
+            <label class="switch" title="タイムを計測する/しない">
+              <input type="checkbox" id="timingToggle" checked>
+              タイム
+            </label>
+            <button id="makeBtn">もんだいをつくる</button>
+          </div>
+        </div>
+
+        <div class="errBar" id="errBar">エラー：</div>
+      </div>
+
+      <div class="panel" style="margin-top:12px;">
+        <div class="grid" id="qs">読み込み中...</div>
+        <div class="score" id="score">点数：— / 100</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="boardHeader">
+        <div>✍ 手書き</div>
+        <div class="boardTools">
+          <button class="toolBtn active" id="penBtn">ペン</button>
+          <button class="toolBtn" id="eraserBtn">消しゴム</button>
+          <button class="toolBtn" id="clearBtn">ぜんぶけす</button>
+        </div>
+      </div>
+      <div class="canvasWrap">
+        <canvas id="board"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ===== 何も出ないとき用：エラーを画面に出す ===== */
+(function(){
+  const bar = document.getElementById("errBar");
+  window.addEventListener("error", (e)=>{
+    if(!bar) return;
+    bar.style.display = "block";
+    bar.textContent = "エラー：" + (e.message || "unknown") + "（" + (e.filename||"") + ":" + (e.lineno||"") + "）";
+  });
+})();
+
+function toHalfWidth(str){
+  return String(str).replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+}
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+const QNUM = 15;
+const LONG_PRESS_MS = 350;
+let problems = [];
+
+/* ===== タイムON/OFF ===== */
+let timingEnabled = true;
+const timingToggle = document.getElementById("timingToggle");
+const timerInline = document.getElementById("timerInline");
+
+/* ===== ベスト ===== */
+const BEST_KEY = "kakezan_best_sec_v1";
+const bestText = document.getElementById("bestText");
+
+function loadBest(){
+  const v = localStorage.getItem(BEST_KEY);
+  if(!v) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+function showBest(){
+  const best = loadBest();
+  bestText.textContent = (best==null) ? "—" : best.toFixed(1);
+}
+function tryUpdateBest(sec){
+  const best = loadBest();
+  if(best==null || sec < best){
+    localStorage.setItem(BEST_KEY, String(sec));
+    showBest();
+  }
+}
+function clearBest(){
+  if(confirm("ベストタイムをけしますか？")){
+    try{ localStorage.removeItem(BEST_KEY); }catch(e){}
+    showBest();
+  }
+}
+document.getElementById("clearBestBtn").addEventListener("click", clearBest);
+
+/* ===== タイマー ===== */
+let tStart = null;
+let tStop = null;
+let tTick = null;
+
+const timerBox = document.getElementById("timerBox");
+const timerText = document.getElementById("timerText");
+const timerHint = document.getElementById("timerHint");
+
+function timerReset(){
+  tStart = null;
+  tStop = null;
+  timerText.textContent = "0.0";
+  timerBox.classList.remove("running");
+  timerHint.textContent = "「もんだいをつくる」でスタート";
+  if(tTick){ clearInterval(tTick); tTick = null; }
+}
+function timerStart(){
+  if(!timingEnabled) return;
+  tStart = performance.now();
+  tStop = null;
+  timerBox.classList.add("running");
+  timerHint.textContent = "ぜんぶ せいかい でストップ！";
+  if(tTick) clearInterval(tTick);
+  tTick = setInterval(()=>{
+    if(tStart==null || tStop!=null) return;
+    timerText.textContent = ((performance.now() - tStart) / 1000).toFixed(1);
+  }, 100);
+}
+function timerStop(){
+  if(!timingEnabled) return;
+  if(tStart==null || tStop!=null) return;
+
+  tStop = performance.now();
+  const sec = (tStop - tStart) / 1000;
+
+  timerText.textContent = sec.toFixed(1);
+  timerBox.classList.remove("running");
+  timerHint.textContent = "🎉 おわり！もういちど は「もんだいをつくる」";
+  if(tTick){ clearInterval(tTick); tTick = null; }
+
+  tryUpdateBest(sec);
+}
+function setTimingUI(){
+  timingEnabled = timingToggle.checked;
+  timerReset();
+  timerInline.classList.toggle("timerOff", !timingEnabled);
+}
+timingToggle.addEventListener("change", setTimingUI);
+
+/* ===== 問題生成（ヒント使用フラグ付き） ===== */
+function makeProblems(){
+  const out=[];
+  while(out.length < QNUM){
+    const a = rand(2,9);
+    const b = rand(2,9);
+    out.push({a,b,ans:a*b, usedHint:false});
+  }
+  return out;
+}
+
+function maybeStopTimerIfAllCorrect(){
+  if(!timingEnabled) return;
+  if(tStart==null || tStop!=null) return;
+
+  const cards = Array.from(document.querySelectorAll(".q"));
+  if(cards.length === 0) return;
+
+  for(let i=0;i<cards.length;i++){
+    const v = Number(cards[i].querySelector(".ans").value);
+    if(v !== problems[i].ans) return;
+  }
+  timerStop();
+}
+
+function render(){
+  const qs = document.getElementById("qs");
+  qs.innerHTML = "";
+
+  problems.forEach((p, idx)=>{
+    const d = document.createElement("div");
+    d.className = "q";
+    d.innerHTML = `
+      <div class="qRow">
+        <span class="expr">${p.a} × ${p.b} =</span>
+
+        <span class="answerBox">
+          <span class="hankakuWarn">半角数字で入力してね</span>
+          <input class="ans" inputmode="numeric" aria-label="答え ${idx+1}">
+          <span class="mark" aria-hidden="true"></span>
+        </span>
+
+        <button class="smallBtn holdBtn" type="button" aria-label="こたえをみる（ながおし）">
+          <span>こたえを</span><span>みる</span>
+        </button>
+      </div>
+    `;
+    qs.appendChild(d);
+
+    const box = d.querySelector(".answerBox");
+    const input = d.querySelector(".ans");
+    const btn = d.querySelector(".holdBtn");
+
+    input.addEventListener("input",(e)=>{
+      const before = e.target.value;
+      const after = toHalfWidth(before);
+      if(before !== after){
+        box.classList.add("warn");
+        clearTimeout(box._warnTimer);
+        box._warnTimer = setTimeout(()=> box.classList.remove("warn"), 1500);
+      }
+      e.target.value = after;
+      maybeStopTimerIfAllCorrect();
+    });
+
+    let saved = "";
+    let pressTimer = null;
+    let holding = false;
+
+    function showAnswer(){
+      if(holding) return;
+      holding = true;
+      p.usedHint = true;
+
+      saved = input.value;
+      input.value = String(p.ans);
+      input.readOnly = true;
+      box.classList.add("revealing");
+    }
+    function hideAnswer(){
+      if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+      if(!holding) return;
+      holding = false;
+
+      input.value = saved;
+      input.readOnly = false;
+      box.classList.remove("revealing");
+    }
+    function startPress(e){
+      e.preventDefault();
+      if(pressTimer) return;
+      pressTimer = setTimeout(()=>{
+        pressTimer = null;
+        showAnswer();
+      }, LONG_PRESS_MS);
+    }
+
+    btn.addEventListener("mousedown", startPress);
+    window.addEventListener("mouseup", hideAnswer);
+    btn.addEventListener("mouseleave", hideAnswer);
+
+    btn.addEventListener("touchstart", startPress, {passive:false});
+    btn.addEventListener("touchend", hideAnswer, {passive:false});
+    btn.addEventListener("touchcancel", hideAnswer);
+  });
+
+  document.getElementById("score").textContent = "点数：— / 100";
+}
+
+function check(){
+  let correct = 0;
+
+  document.querySelectorAll(".q").forEach((q,i)=>{
+    const box = q.querySelector(".answerBox");
+    box.classList.remove("okSingle","okDouble");
+
+    const v = Number(q.querySelector(".ans").value);
+    if(v === problems[i].ans){
+      correct++;
+      if(problems[i].usedHint) box.classList.add("okSingle"); // 〇
+      else box.classList.add("okDouble"); // ◎
+    }
+  });
+
+  const score = Math.round((correct / QNUM) * 100);
+  document.getElementById("score").textContent = `点数：${score} / 100`;
+  maybeStopTimerIfAllCorrect();
+}
+
+/* ===== 手書き ===== */
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
+let drawing=false, lastX=0, lastY=0, mode="pen";
+
+function resizeCanvas(){
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  // いったん保存
+  const old = document.createElement("canvas");
+  old.width = canvas.width;
+  old.height = canvas.height;
+  old.getContext("2d").drawImage(canvas,0,0);
+
+  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  // 復元
+  ctx.drawImage(old, 0, 0, old.width, old.height, 0, 0, rect.width, rect.height);
+  setPenStyle();
+}
+function setPenStyle(){
+  ctx.lineCap="round"; ctx.lineJoin="round";
+  if(mode==="pen"){
+    ctx.globalCompositeOperation="source-over";
+    ctx.lineWidth=4;
+    ctx.strokeStyle="#111827";
+  }else{
+    ctx.globalCompositeOperation="destination-out";
+    ctx.lineWidth=16;
+    ctx.strokeStyle="rgba(0,0,0,1)";
+  }
+}
+function getPos(e){
+  const r=canvas.getBoundingClientRect();
+  const t=e.touches?e.touches[0]:null;
+  const cx=t?t.clientX:e.clientX;
+  const cy=t?t.clientY:e.clientY;
+  return {x:cx-r.left,y:cy-r.top};
+}
+function startDraw(e){
+  drawing=true;
+  const p=getPos(e); lastX=p.x; lastY=p.y;
+}
+function moveDraw(e){
+  if(!drawing) return;
+  e.preventDefault();
+  const p=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+  lastX=p.x; lastY=p.y;
+}
+function endDraw(){ drawing=false; }
+
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousemove", moveDraw);
+window.addEventListener("mouseup", endDraw);
+
+canvas.addEventListener("touchstart", startDraw, {passive:false});
+canvas.addEventListener("touchmove", moveDraw, {passive:false});
+canvas.addEventListener("touchend", endDraw);
+canvas.addEventListener("touchcancel", endDraw);
+
+const penBtn=document.getElementById("penBtn");
+const eraserBtn=document.getElementById("eraserBtn");
+const clearBtn=document.getElementById("clearBtn");
+
+function setActive(btn){
+  [penBtn, eraserBtn].forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+penBtn.addEventListener("click", ()=>{ mode="pen"; setActive(penBtn); setPenStyle(); });
+eraserBtn.addEventListener("click", ()=>{ mode="eraser"; setActive(eraserBtn); setPenStyle(); });
+clearBtn.addEventListener("click", ()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); });
+
+/* ===== 初期化 ===== */
+document.getElementById("makeBtn").onclick=()=>{
+  problems = makeProblems();
+  render();
+  timerReset();
+  timerStart();
+};
+document.getElementById("checkBtn").onclick=check;
+
+problems = makeProblems();
+render();
+
+showBest();
+setTimingUI();
+setPenStyle();
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+</script>
 </body>
 </html>
