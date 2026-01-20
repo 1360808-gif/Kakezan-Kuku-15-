@@ -213,8 +213,58 @@ button:active{ transform: translateY(1px); }
   border:2px solid var(--line);
   background:#fff;
 }
-.answerBox.ok input{ border-color:#16a34a; }
 
+/* 入力が全角→半角になった時の注意 */
+.hankakuWarn{
+  position:absolute;
+  top:-26px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#fee2e2;
+  color:#b91c1c;
+  font-size:12px;
+  font-weight:900;
+  padding:4px 8px;
+  border-radius:8px;
+  white-space:nowrap;
+  box-shadow:0 4px 8px rgba(0,0,0,.12);
+  display:none;
+  z-index:20;
+}
+.answerBox.warn .hankakuWarn{ display:block; }
+
+/* ===== 〇 / ◎ 表示 ===== */
+.mark{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:46px;
+  height:46px;
+  border:4px solid rgba(239,68,68,0.72);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  display:none;
+  z-index:9999;
+}
+
+/* 〇（答えをみた） */
+.answerBox.okSingle .mark{ display:block; }
+
+/* ◎（答えをみてない）= 二重丸 */
+.answerBox.okDouble .mark{ display:block; }
+.answerBox.okDouble .mark::after{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border:4px solid rgba(239,68,68,0.72);
+  border-radius:50%;
+}
+
+/* 答えを表示中の見た目 */
+.answerBox.revealing input{ background:#f8fafc; }
+
+/* ===== こたえをみるボタン ===== */
 .smallBtn{
   width:60px;
   height:38px;
@@ -257,6 +307,10 @@ button:active{ transform: translateY(1px); }
   background:#fff;
   font-weight:900;
   cursor:pointer;
+}
+.toolBtn.active{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.15);
 }
 .canvasWrap{
   border:2px dashed #cbd5e1;
@@ -330,7 +384,7 @@ button:active{ transform: translateY(1px); }
       <div class="boardHeader">
         <div>✍ 手書き</div>
         <div class="boardTools">
-          <button class="toolBtn" id="penBtn">ペン</button>
+          <button class="toolBtn active" id="penBtn">ペン</button>
           <button class="toolBtn" id="eraserBtn">消しゴム</button>
           <button class="toolBtn" id="clearBtn">ぜんぶけす</button>
         </div>
@@ -441,13 +495,13 @@ function setTimingUI(){
 }
 timingToggle.addEventListener("change", setTimingUI);
 
-/* ===== 問題生成 ===== */
+/* ===== 問題生成（答えを見たフラグ付き） ===== */
 function makeProblems(){
   const out=[];
   while(out.length < QNUM){
     const a = rand(2,9);
     const b = rand(2,9);
-    out.push({a,b,ans:a*b});
+    out.push({a,b,ans:a*b, usedHint:false});
   }
   return out;
 }
@@ -472,15 +526,19 @@ function render(){
   const qs = document.getElementById("qs");
   qs.innerHTML = "";
 
-  problems.forEach((p)=>{
+  problems.forEach((p, idx)=>{
     const d = document.createElement("div");
     d.className = "q";
     d.innerHTML = `
       <div class="qRow">
         <span class="expr">${p.a} × ${p.b} =</span>
+
         <span class="answerBox">
-          <input class="ans" inputmode="numeric">
+          <span class="hankakuWarn">半角数字で入力してね</span>
+          <input class="ans" inputmode="numeric" aria-label="答え ${idx+1}">
+          <span class="mark" aria-hidden="true"></span>
         </span>
+
         <button class="smallBtn holdBtn" type="button" aria-label="こたえをみる（ながおし）">
           <span>こたえを</span>
           <span>みる</span>
@@ -489,12 +547,21 @@ function render(){
     `;
     qs.appendChild(d);
 
+    const box = d.querySelector(".answerBox");
     const input = d.querySelector(".ans");
     const btn = d.querySelector(".holdBtn");
 
-    // 入力：全角→半角 + 全問判定
+    // 入力：全角→半角 + 注意表示 + 全問判定
     input.addEventListener("input",(e)=>{
-      e.target.value = toHalfWidth(e.target.value);
+      const before = e.target.value;
+      const after = toHalfWidth(before);
+      if(before !== after){
+        box.classList.add("warn");
+        clearTimeout(box._warnTimer);
+        box._warnTimer = setTimeout(()=> box.classList.remove("warn"), 1500);
+      }
+      e.target.value = after;
+
       maybeStopTimerIfAllCorrect();
     });
 
@@ -506,16 +573,24 @@ function render(){
     function showAnswer(){
       if(holding) return;
       holding = true;
+
+      // ★ここで「答えを見た」扱い
+      p.usedHint = true;
+
       saved = input.value;
       input.value = String(p.ans);
       input.readOnly = true;
+      box.classList.add("revealing");
     }
+
     function hideAnswer(){
       if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
       if(!holding) return;
       holding = false;
+
       input.value = saved;
       input.readOnly = false;
+      box.classList.remove("revealing");
     }
 
     function startPress(e){
@@ -539,17 +614,24 @@ function render(){
   document.getElementById("score").textContent = "点数：— / 100";
 }
 
-/* ===== 判定 ===== */
+/* ===== こたえあわせ：〇/◎ を出す ===== */
 function check(){
   let correct = 0;
+
   document.querySelectorAll(".q").forEach((q,i)=>{
     const box = q.querySelector(".answerBox");
-    box.classList.remove("ok");
+    box.classList.remove("okSingle","okDouble");
 
     const v = Number(q.querySelector(".ans").value);
     if(v === problems[i].ans){
-      box.classList.add("ok");
       correct++;
+
+      // ★答えを見た→〇（okSingle） / 見てない→◎（okDouble）
+      if(problems[i].usedHint){
+        box.classList.add("okSingle");
+      }else{
+        box.classList.add("okDouble");
+      }
     }
   });
 
@@ -624,13 +706,21 @@ canvas.addEventListener("touchmove", moveDraw, {passive:false});
 canvas.addEventListener("touchend", endDraw);
 canvas.addEventListener("touchcancel", endDraw);
 
-document.getElementById("penBtn").onclick=()=>{ mode="pen"; setPenStyle(); };
-document.getElementById("eraserBtn").onclick=()=>{ mode="eraser"; setPenStyle(); };
-document.getElementById("clearBtn").onclick=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); };
+const penBtn=document.getElementById("penBtn");
+const eraserBtn=document.getElementById("eraserBtn");
+const clearBtn=document.getElementById("clearBtn");
+
+function setActive(btn){
+  [penBtn, eraserBtn].forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+penBtn.addEventListener("click", ()=>{ mode="pen"; setActive(penBtn); setPenStyle(); });
+eraserBtn.addEventListener("click", ()=>{ mode="eraser"; setActive(eraserBtn); setPenStyle(); });
+clearBtn.addEventListener("click", ()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); });
 
 /* ===== 初期化 ===== */
 document.getElementById("makeBtn").onclick=()=>{
-  problems = makeProblems();
+  problems = makeProblems();   // ★usedHintもリセットされる
   render();
   timerReset();
   timerStart();
